@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title></title>
+</head>
+
+<body>
+    
+    <style>
+        #container{
+    position:absolute;
+    top:50px;
+    height:500px;
+    width:350px;
+    background-color:black;
+  }
+  .person {
+  position:absolute;
+  height: 10px;
+  width: 10px;
+  border-radius: 50px;
+  }
+  .b {
+  position:absolute;
+  height:40px;
+  width:80px;
+  border-radius:20px;
+  color: black;
+  }
+        
+    </style>
+    
+  <button class="b" onclick="start()">Start</button>
+  <button class="b" style="left:90px" onclick="iType='green'">Normal</button>
+  <button class="b" style="left:180px" onclick="iType='red'">Infector</button>
+  <button class="b" style="left:270px" onclick="iType='blue'">Doctor</button>
+  <div id="container" ontouchmove="vC(event)" ontouchstart="vC(event)"></div>
+</body>
+<script>
+    
+    
+alert("Virus Spread simulation")
+alert("How it works:\nThere are 4 types of people.\nNormal (green), Infector (red), Doctors (blue) and Recovered (grey).\nEach of them move in their own speed.\n\nIf a Normal person meets Infected person then there is 20% chance that he will get infected.\n\nIf Infected person meets Doctor then there is 60% chance that he will be recoverd and 40% chance that he will become normal person.\n\nRecovered persons and Doctors will not get infected.")
+alert("How to use:\nClick on button (normal,infected or doctor) and then click inside the black box to create specfic person.\nAfter everything is done click on start button to see the magic.")
+
+//Create more normal persons, less doctors and 1 infected person to get realastic effect
+    
+var i=null,v=0,vX=[],vY=[],vPX=[],vPY=[],vType=[],iType="normal"
+
+function r(min,max){
+  return min+((Math.random()*max))
+}
+function chance(x,y,z){
+  if (Math.random()*100<x){
+    return y
+  }
+  else{
+    return z
+  }
+}
+function vC(event){
+  x=event.touches[0].clientX
+  y=event.touches[0].clientY-50
+  d=document.createElement('div')
+  d.id=('v'+v)
+  d.className="person"
+  document.getElementById('container').appendChild(d)
+  dd=document.getElementById('v'+v)
+  vPX.push(x)
+  vPY.push(y)
+  dd.style.top=y+'px'
+  dd.style.left=x+'px'
+  vX.push(r(0,1))
+  vY.push(r(0,1))
+  dd.style.backgroundColor=iType
+  vType.push(iType)
+  v+=1
+ 
+}
+function changeTo(g,t){
+  vType[g]=t
+  document.getElementById('v'+g).style.backgroundColor=t
+}
+function move() {
+  for(c=1;c<v;c++){
+    var d=document.getElementById('v'+c)
+    if (vPX[c]>=340 || vPX[c]<=0){
+      vX[c]=-vX[c]
+    }
+    if (vPY[c]>=490||vPY[c]<=0) {
+     vY[c]=-vY[c]
+     
+    }
+    for(g=1;g<v;g++){
+      if(g!=c){
+        if(vPX[g]<vPX[c] && vPX[g]+10>vPX[c] && (vPY[g]<vPY[c] && vPY[g]+10>vPY[c])){
+          if(vType[c]=="red" && vType[g]=="green"){
+          changeTo(g,chance(20,"red","green"))
+          }
+          if(vType[c]=="blue" && vType[g]=="red"){
+            changeTo(g,chance(60,"grey","green"))
+            //vX[g]=0
+            //vY[g]=0
+          }
+        }
+      }
+    }
+    vPX[c]+=vX[c]
+    vPY[c]+=vY[c]
+    d.style.left=vPX[c]+'px'
+    d.style.top=vPY[c]+'px'
+  }
+}
+var z=true
+function start(){
+  if(i==null){
+  i=setInterval(move,0)
+  }
+  else{
+    clearInterval(i)
+    i=null
+  }
+}
+</script>
+</html>
